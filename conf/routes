@@ -1,0 +1,4 @@
+GET     /api                            controllers.TaskController.getAllTasks
+POST    /api                            controllers.TaskController.newTask
+POST    /api/update/:id                 controllers.TaskController.completeTask(id: Long)
+POST    /api/delete/:id                 controllers.TaskController.deleteTask(id: Long)
