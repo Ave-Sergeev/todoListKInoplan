@@ -1,5 +1,5 @@
 # Tasks
-GET     /api                            controllers.TaskController.allTasks
-POST    /api                            controllers.TaskController.addTask
+GET     /api/all                        controllers.TaskController.allTasks
+POST    /api/add                        controllers.TaskController.addTask
 POST    /api/update/:id                 controllers.TaskController.completeTask(id: Long)
 POST    /api/delete/:id                 controllers.TaskController.deleteTask(id: Long)

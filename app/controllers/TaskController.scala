@@ -1,43 +1,35 @@
 package controllers
 
-import daos.TaskDao
-import models.Task
-import play.api.mvc._
-import play.api.libs.json.{JsObject, Json}
+
 import com.google.inject.Inject
-import play.modules.reactivemongo.MongoController
-import reactivemongo.play.json.collection.JSONCollection
+import models.Task
+import play.api.libs.json._
+import play.api.mvc._
+
 
 class TaskController @Inject() (
-  cc: ControllerComponents,
-  taskDao: TaskDao
+  cc: ControllerComponents
 ) extends AbstractController (cc)
-  with MongoController
 {
-  //A reference of a JSON style collection in Mongo
-  def tasksCollection: Any = db.collection[JSONCollection]("tasks")
 
-  //Convinience helper thar marshalls json or sends a 404 if none found
-  def asJson(v: Option[JsObject]): Result = v.map(Ok(_)).getOrElse(NotFound)
-
-
-  //Default index entry point
-  def index: Action[AnyContent] = Action {
-    Ok("REST!")
+  def allTasks(): Action[AnyContent] = Action { implicit request =>
+    val tasks = List(Task(1,"",isCompleted = false, deleted = false))
+    Ok(Json.toJson(tasks)).as("application/json")
   }
 
-  def allTasks(): Action[AnyContent] = Action {
-    Ok(Json.toJson(taskDao.all()))
+  def addTask(): Action[JsValue] = Action(parse.json) { implicit request =>
+    val taskResult = request.body.validate[Task]
+    taskResult.fold(
+      errors => {
+        BadRequest(Json.obj("status" -> "error", "message" -> JsError.toJson(errors)))
+      },
+      task =>  {
+    Ok(Json.toJson(task)).as("application/json")
+  }
+    )
   }
 
-  def addTask(): Action[AnyContent] = TODO
+  def completeTask(id: Long): Action[AnyContent] = TODO
 
-  def completeTask(id: Long): Action[AnyContent] = Action { implicit request =>
-    taskDao.update(id)
-    Ok("")
-  }
-  def deleteTask(id: Long): Action[AnyContent] = Action { implicit request =>
-      taskDao.delete(id)
-      Ok("")
-  }
+  def deleteTask(id: Long): Action[AnyContent] = TODO
 }

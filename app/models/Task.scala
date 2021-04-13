@@ -11,9 +11,12 @@ case class Task (
 
 object Task {
   //на макросе
-  implicit val taskFormat: OFormat[Task] = Json.format[Task]
+  implicit val taskImplicitReads: Reads[Task] = Json.reads[Task]
+  implicit val taskImplicitWrites: OWrites[Task] = Json.writes[Task]
+}
 
-  // на шаблоне
+/*
+// на шаблоне
   implicit val reads: Reads[Task] = for {
     id <- (JsPath \ "id").readWithDefault[Long](0L)
     descriptions <- (JsPath \ "descriptions").read[String]
@@ -27,5 +30,4 @@ object Task {
     "isCompleted" -> task.isCompleted,
     "deleted" -> task.deleted
   )
-}
-
+ */
