@@ -10,7 +10,7 @@ case class Task (
 )
 
 object Task {
-  //на макросе?
+  //на макросе
   implicit val taskFormat: OFormat[Task] = Json.format[Task]
 
   // на шаблоне
