@@ -9,13 +9,9 @@ class TaskController @Inject() (
   cc: ControllerComponents
 ) extends AbstractController (cc) {
 
-  def getAllTasks(): Action[AnyContent] = Action {
-    NoContent
-  }
+  def allTasks(): Action[AnyContent] = TODO
 
-  def newTask(): Action[AnyContent] = Action {
-    NoContent
-  }
+  def newTask(): Action[AnyContent] = TODO
 
   def completeTask(id: Long): Action[AnyContent] = Action {
     NoContent

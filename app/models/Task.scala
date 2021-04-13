@@ -10,6 +10,10 @@ case class Task (
 )
 
 object Task {
+  //на макросе?
+  implicit val taskFormat = Json.format[Task]
+
+  // на шаблоне
   implicit val reads: Reads[Task] = for {
     id <- (JsPath \ "id").readWithDefault[Long](0L)
     descriptions <- (JsPath \ "descriptions").read[String]
