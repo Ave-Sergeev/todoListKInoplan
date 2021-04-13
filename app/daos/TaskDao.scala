@@ -8,15 +8,11 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class TaskDao @Inject() () (implicit ec: ExecutionContext) {
   // тут описываются запросы к бд?
-  def add(task: Task) {}
+  def all() {}
 
-  def tasks() {}
+  def newTasks() {}
 
-  def taskById(id: Long) {}
-
-  def tasksByUserId() {}
-
-  def update(task: Task) {}
+  def update(id: Long) {}
 
   def delete(id: Long) {}
 

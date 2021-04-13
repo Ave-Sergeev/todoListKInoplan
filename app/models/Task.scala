@@ -11,7 +11,7 @@ case class Task (
 
 object Task {
   //на макросе?
-  implicit val taskFormat = Json.format[Task]
+  implicit val taskFormat: OFormat[Task] = Json.format[Task]
 
   // на шаблоне
   implicit val reads: Reads[Task] = for {
