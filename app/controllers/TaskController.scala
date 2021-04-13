@@ -1,35 +1,32 @@
 package controllers
 
-
 import com.google.inject.Inject
 import models.Task
 import play.api.libs.json._
 import play.api.mvc._
+import reactivemongo.bson.BSONObjectID
+import services.TaskService
 
+import scala.concurrent.Future
 
-class TaskController @Inject() (
-  cc: ControllerComponents
-) extends AbstractController (cc)
-{
+class TaskController @Inject()(
+  taskService: TaskService
+) extends InjectedController {
 
-  def allTasks(): Action[AnyContent] = Action { implicit request =>
-    val tasks = List(Task(1,"",isCompleted = false, deleted = false))
-    Ok(Json.toJson(tasks)).as("application/json")
+  def allTasks(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(Json.toJson(taskService.allTasks)))
   }
 
-  def addTask(): Action[JsValue] = Action(parse.json) { implicit request =>
-    val taskResult = request.body.validate[Task]
-    taskResult.fold(
-      errors => {
-        BadRequest(Json.obj("status" -> "error", "message" -> JsError.toJson(errors)))
-      },
-      task =>  {
-    Ok(Json.toJson(task)).as("application/json")
-  }
-    )
+  def addTask(): Action[Task] = Action(parse.json[Task]).async { request =>
+    import request.{body => task}
+    taskService.addTask(task)
+    Future.successful(Ok(Json.toJson(task)))
   }
 
   def completeTask(id: Long): Action[AnyContent] = TODO
 
-  def deleteTask(id: Long): Action[AnyContent] = TODO
+  def deleteTask(id: Long): Action[AnyContent] = Action.async {
+    val savedTask: Task = taskService.deleted(id)
+    Future.successful(Ok(Json.toJson(savedTask)))
+  }
 }

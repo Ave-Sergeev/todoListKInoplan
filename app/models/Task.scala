@@ -1,19 +1,21 @@
 package models
 
 import play.api.libs.json._
+import reactivemongo.bson.BSONObjectID
 
 case class Task (
-  id: Long,
+  _id: BSONObjectID = BSONObjectID.generate(),
   descriptions: String,
   isCompleted: Boolean,
   deleted: Boolean
 )
 
-object Task {
-  //на макросе
-  implicit val taskImplicitReads: Reads[Task] = Json.reads[Task]
-  implicit val taskImplicitWrites: OWrites[Task] = Json.writes[Task]
+trait TaskJson {
+  //на макросе, сразу и reads и writes
+  implicit val taskFormat: OFormat[Task] = Json.format[Task]
 }
+
+object Task extends TaskJson
 
 /*
 // на шаблоне
