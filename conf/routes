@@ -1,5 +1,5 @@
 # Tasks
-GET     /api/all                        controllers.TaskController.allTasks
-POST    /api/add                        controllers.TaskController.addTask
-POST    /api/update/:id                 controllers.TaskController.completeTask(id: Long)
-POST    /api/delete/:id                 controllers.TaskController.deleteTask(id: Long)
+GET     /api/all                        controllers.TaskController.allTasks()
+POST    /api/add                        controllers.TaskController.addTask()
+PUT     /api/update/:id                 controllers.TaskController.completeTask(id: reactivemongo.api.bson.BSONObjectID)
+DELETE  /api/delete/:id                 controllers.TaskController.deleteTask(id: reactivemongo.api.bson.BSONObjectID)

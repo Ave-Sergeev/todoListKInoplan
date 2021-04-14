@@ -2,36 +2,38 @@ package daos
 
 import models.Task
 import play.modules.reactivemongo.ReactiveMongoApi
-import reactivemongo.api._
+import reactivemongo.api.Cursor
+import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
+import reactivemongo.api.bson.Macros.Placeholder.Handler
 import reactivemongo.api.bson.collection.BSONCollection
-import reactivemongo.bson._
-
+import reactivemongo.api.commands.WriteResult
 import javax.inject._
 import scala.concurrent._
 import scala.concurrent.ExecutionContext
-
 @Singleton
 class TaskDao @Inject()(
   mongoApi: ReactiveMongoApi
 ) (implicit ec: ExecutionContext) {
 
   val collection: Future[BSONCollection] = mongoApi.database.map(_.collection("tasks"))
-
-  //пример
-  def findById(id: BSONObjectID): Future[List[Task]] = {
-    collection.flatMap(c =>
-      c.find(BSONDocument("_id" -> id), None)
-        .cursor[Task](ReadPreference.secondaryPreferred)
-        .collect[List](-1, Cursor.FailOnError[List[Task]]())
+  def findAll: Future[Seq[Task]] =
+    collection.flatMap(
+      _.find(BSONDocument(), None)
+        .cursor[Task]()
+        .collect[Seq](-1, Cursor.FailOnError[Seq[Task]]())
     )
-  }
-
-  def all() {}
-
-  def newTasks() {}
-
-  def update(id: Long) {}
-
-  def delete(id: Long) {}
-
+  def create(task: Task): Future[WriteResult] =
+    collection.flatMap(
+      _.insert(ordered = false).one(task.copy())
+    )
+  def update(id: BSONObjectID, task: Task): Future[WriteResult] =
+    collection.flatMap(
+      _.update(ordered = false)
+        .one(BSONDocument("_id" -> id), task.copy())
+    )
+  def delete(id: BSONObjectID): Future[WriteResult] =
+    collection.flatMap(
+      _.delete()
+        .one(BSONDocument("_id" -> id), Some(1))
+    )
 }

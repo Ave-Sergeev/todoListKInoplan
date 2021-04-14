@@ -1,7 +1,8 @@
 package models
 
 import play.api.libs.json._
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.{BSONDocumentHandler, BSONObjectID, Macros}
+import scala.util.{Failure, Success}
 
 case class Task (
   _id: BSONObjectID = BSONObjectID.generate(),
@@ -10,26 +11,25 @@ case class Task (
   deleted: Boolean
 )
 
-trait TaskJson {
-  //на макросе, сразу и reads и writes
-  implicit val taskFormat: OFormat[Task] = Json.format[Task]
+trait TaskJson extends BsonIdToJson {
+  implicit val jsonFormat: OFormat[Task] = Json.using[Json.WithDefaultValues].format[Task]
 }
 
-object Task extends TaskJson
+trait TaskBson {
+  implicit val bsonFormat: BSONDocumentHandler[Task] = Macros.handler[Task]
+}
 
-/*
-// на шаблоне
-  implicit val reads: Reads[Task] = for {
-    id <- (JsPath \ "id").readWithDefault[Long](0L)
-    descriptions <- (JsPath \ "descriptions").read[String]
-    isCompleted <- (JsPath \ "isCompleted").readWithDefault[Boolean](false)
-    deleted <- (JsPath \ "deleted").readWithDefault[Boolean](false)
-  } yield Task(id,  descriptions, isCompleted, deleted)
+object Task extends TaskJson with TaskBson
 
-  implicit val writes: Writes[Task] = task => Json.obj(
-    "id" -> task.id,
-    "descriptions" -> task.descriptions,
-    "isCompleted" -> task.isCompleted,
-    "deleted" -> task.deleted
-  )
- */
+trait BsonIdToJson {
+  implicit val objectIdReads: Reads[BSONObjectID] = Reads[BSONObjectID] { jsonValue: JsValue =>
+    BSONObjectID.parse(jsonValue.as[String]) match {
+      case Success(bsonId) => JsSuccess(bsonId)
+      case Failure(e) =>
+        JsError("Invalid id")
+    }
+  }
+  implicit val objectIdWrites: Writes[BSONObjectID] = (bsonId: BSONObjectID) => {
+    Json.toJson(bsonId.stringify)
+  }
+}

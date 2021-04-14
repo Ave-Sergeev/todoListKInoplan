@@ -1,32 +1,28 @@
 package controllers
-
 import com.google.inject.Inject
+import daos.TaskDao
 import models.Task
 import play.api.libs.json._
 import play.api.mvc._
-import reactivemongo.bson.BSONObjectID
-import services.TaskService
-
-import scala.concurrent.Future
-
+import reactivemongo.api.bson.BSONObjectID
+import scala.concurrent.ExecutionContext
 class TaskController @Inject()(
-  taskService: TaskService
+  taskDao: TaskDao
+)(implicit ec: ExecutionContext
 ) extends InjectedController {
 
   def allTasks(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.toJson(taskService.allTasks)))
+    taskDao.findAll.map(tasks => Ok(Json.toJson(tasks)))
   }
-
-  def addTask(): Action[Task] = Action(parse.json[Task]).async { request =>
+  def addTask(): Action[Task] = Action.async(parse.json[Task]) { request =>
     import request.{body => task}
-    taskService.addTask(task)
-    Future.successful(Ok(Json.toJson(task)))
+    taskDao.create(task).map(_ => Created(Json.toJson(task)))
   }
-
-  def completeTask(id: Long): Action[AnyContent] = TODO
-
-  def deleteTask(id: Long): Action[AnyContent] = Action.async {
-    val savedTask: Task = taskService.deleted(id)
-    Future.successful(Ok(Json.toJson(savedTask)))
+  def completeTask(id: BSONObjectID): Action[Task] = Action.async(parse.json[Task]) {
+    implicit request => import request.{body => task}
+      taskDao.update(id, task).map(_ => Ok(Json.toJson(task)))
+  }
+  def deleteTask(id: BSONObjectID): Action[AnyContent] = Action.async { implicit request =>
+    taskDao.delete(id).map(_ => NoContent)
   }
 }
