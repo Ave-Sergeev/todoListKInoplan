@@ -21,7 +21,7 @@ class TodoAction @Inject()(
   def todoAction(id: BSONObjectID): ActionBuilder[TodoRequest, AnyContent] = {
 
     new ActionBuilder[TodoRequest, AnyContent] {
-      
+
       def executionContext: ExecutionContext = ec
 
       override def parser: BodyParser[AnyContent] = defaultParser
