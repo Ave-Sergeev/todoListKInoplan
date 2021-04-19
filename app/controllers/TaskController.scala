@@ -4,10 +4,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
 import play.api.mvc._
 import actions.TodoAction
-import com.google.inject.Inject
 import models.Task
 import reactivemongo.api.bson.BSONObjectID
 import services.TaskService
+
+import javax.inject.Inject
 
 class TaskController @Inject()(
   todoAction: TodoAction,
@@ -31,14 +32,9 @@ class TaskController @Inject()(
 
   def completeTask(id: BSONObjectID): Action[Task] = todoAction.todoAction(id).async(parse.json[Task]) { request =>
     import request.{body => task}
-    taskService.update(id, task).map { writeResult =>
-      val errors = writeResult.writeErrors
-
-      if (errors.isEmpty) {
-        Ok(Json.toJson(task))
-      } else {
-        InternalServerError(Json.obj("error" -> errors.mkString(", ")))
-      }
+    taskService.update(id, task).map {
+      case Right(_) => Ok(Json.toJson(task))
+      case Left(error) => InternalServerError(Json.obj("error" -> error))
     }
   }
 

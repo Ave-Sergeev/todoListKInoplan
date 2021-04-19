@@ -1,13 +1,15 @@
 package models
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import play.api.libs.json._
 import reactivemongo.api.bson.{BSONDocumentHandler, BSONObjectID, Macros}
+
 import scala.util.{Failure, Success}
 
 case class Task (
   _id: BSONObjectID = BSONObjectID.generate(),
   descriptions: String,
-  is_completed: Boolean,
+  completed: Boolean,
   deleted: Boolean
 )
 

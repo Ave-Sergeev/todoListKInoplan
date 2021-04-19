@@ -1,10 +1,11 @@
 package services
 
-import com.google.inject.Inject
 import daos.TaskDao
 import models.Task
 import reactivemongo.api.bson.BSONObjectID
 import reactivemongo.api.commands.WriteResult
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TaskService @Inject()(
@@ -20,8 +21,16 @@ class TaskService @Inject()(
   def create(task: Task): Future[WriteResult] =
     taskDao.create(task)
 
-  def update(id: BSONObjectID, task: Task): Future[WriteResult] =
-    taskDao.update(id, task)
+  def update(id: BSONObjectID, task: Task): Future[Either[String, Unit]] =
+    taskDao.update(id, task).map { writeResult =>
+      val errors = writeResult.writeErrors
+
+      if (errors.isEmpty) {
+      Right(())
+      } else {
+      Left(errors.mkString(", "))
+      }
+    }
 
   def delete(id: BSONObjectID): Future[WriteResult] =
     taskDao.delete(id)
