@@ -7,28 +7,42 @@ import play.api.libs.json._
 import play.api.mvc._
 import reactivemongo.api.bson.BSONObjectID
 import services.TaskService
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class TaskController @Inject()(
   todoAction: TodoAction,
   taskService: TaskService
-) (implicit ex: ExecutionContext) extends InjectedController {
+) (implicit ex: ExecutionContext)
+  extends InjectedController {
 
   def allTasks(): Action[AnyContent] = Action.async { implicit request =>
     taskService.findAll.map(tasks => Ok(Json.toJson(tasks)))
   }
+
   def oneTask(id: BSONObjectID): Action[AnyContent] = todoAction.todoAction(id).async { request =>
-    taskService.findOne(id).map(task => Ok(Json.toJson(task)))
+    val foundedTask = request.task
+    Future.successful(Ok(Json.toJson(foundedTask)))
   }
+
   def addTask(): Action[Task] = Action.async(parse.json[Task]) { request =>
     import request.{body => task}
     taskService.create(task).map(_ => Created(Json.toJson(task)))
   }
-  def completeTask(id: BSONObjectID): Action[Task] = todoAction.todoAction(id).async(parse.json[Task]) {
-    implicit request => import request.{body => task}
-      taskService.update(id, task).map(_ => if (id != null) Ok(Json.toJson(task)) else NotFound)
+
+  def completeTask(id: BSONObjectID): Action[Task] = todoAction.todoAction(id).async(parse.json[Task]) { request =>
+    import request.{body => task}
+    taskService.update(id, task).map { writeResult =>
+      val errors = writeResult.writeErrors
+
+      if (errors.isEmpty) {
+        Ok(Json.toJson(task))
+      } else {
+        InternalServerError(Json.obj("error" -> errors.mkString(", ")))
+      }
+    }
   }
+
   def deleteTask(id: BSONObjectID): Action[AnyContent] = todoAction.todoAction(id).async { implicit request =>
-    taskService.delete(id).map(_ => NoContent)
+    Future.successful(NoContent)
   }
 }

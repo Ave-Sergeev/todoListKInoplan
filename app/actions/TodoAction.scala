@@ -23,14 +23,18 @@ class TodoAction @Inject()(
 
       override def parser: BodyParser[AnyContent] = defaultParser
 
-      override def invokeBlock[A](request: Request[A], block: TodoRequest[A] =>
-        Future[Result]): Future[Result] = {
+      override def invokeBlock[A](
+        request: Request[A],
+        block: TodoRequest[A] => Future[Result]
+      ): Future[Result] = {
 
         taskService
           .findOne(id)
-            .flatMap(_.map(task => block(new TodoRequest(task, request)))
-              .getOrElse(Future.successful(NotFound)))
-        }
+          .flatMap(_.map(task =>
+            block(new TodoRequest(task, request)))
+            .getOrElse(Future.successful(NotFound(s"task with id ${id.stringify} not exist"))
+          ))
+      }
     }
   }
 }

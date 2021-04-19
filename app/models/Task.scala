@@ -29,6 +29,7 @@ trait BsonIdToJson {
         JsError("Invalid id")
     }
   }
+
   implicit val objectIdWrites: Writes[BSONObjectID] = (bsonId: BSONObjectID) => {
     Json.toJson(bsonId.stringify)
   }
