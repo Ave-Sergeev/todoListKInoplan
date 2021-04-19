@@ -1,7 +1,7 @@
 package actions
 
-import models.Task
 import play.api.mvc.{Request, WrappedRequest}
+import models.Task
 
 class TodoRequest[A](
   val task: Task,

@@ -1,11 +1,11 @@
 package actions
 
-import play.api.mvc.Results.NotFound
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Results.NotFound
 import play.api.mvc._
-import reactivemongo.api.bson.BSONObjectID
 import services.TaskService
+import reactivemongo.api.bson.BSONObjectID
 
 @Singleton
 class TodoAction @Inject()(

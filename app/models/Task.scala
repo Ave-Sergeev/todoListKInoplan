@@ -7,7 +7,7 @@ import scala.util.{Failure, Success}
 case class Task (
   _id: BSONObjectID = BSONObjectID.generate(),
   descriptions: String,
-  isCompleted: Boolean,
+  is_completed: Boolean,
   deleted: Boolean
 )
 

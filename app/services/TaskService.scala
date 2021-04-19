@@ -6,14 +6,13 @@ import models.Task
 import reactivemongo.api.bson.BSONObjectID
 import reactivemongo.api.commands.WriteResult
 import scala.concurrent.Future
-import play.api.mvc._
 
 class TaskService @Inject()(
   taskDao: TaskDao)(
 ) {
 
-  def findAll: Future[Seq[Task]] =
-    taskDao.findAll
+  def findAll(): Future[Seq[Task]] =
+    taskDao.findAll()
 
   def findOne(id: BSONObjectID): Future[Option[Task]] =
     taskDao.findById(id)

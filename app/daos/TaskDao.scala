@@ -1,15 +1,15 @@
 package daos
 
-import models.Task
+import javax.inject._
+import scala.concurrent._
+import scala.concurrent.ExecutionContext
 import play.modules.reactivemongo.ReactiveMongoApi
+import models.Task
 import reactivemongo.api.Cursor
 import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.api.bson.Macros.Placeholder.Handler
 import reactivemongo.api.bson.collection.BSONCollection
 import reactivemongo.api.commands.WriteResult
-import javax.inject._
-import scala.concurrent._
-import scala.concurrent.ExecutionContext
 
 @Singleton
 class TaskDao @Inject()(
@@ -18,7 +18,7 @@ class TaskDao @Inject()(
 
   val collection: Future[BSONCollection] = mongoApi.database.map(_.collection("tasks"))
 
-  def findAll: Future[Seq[Task]] =
+  def findAll(): Future[Seq[Task]] =
     collection.flatMap(
       _.find(BSONDocument(), None)
         .cursor[Task]()
