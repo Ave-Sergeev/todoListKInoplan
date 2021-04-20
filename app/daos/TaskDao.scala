@@ -4,12 +4,12 @@ import javax.inject._
 import scala.concurrent._
 import scala.concurrent.ExecutionContext
 import play.modules.reactivemongo.ReactiveMongoApi
-import models.Task
 import reactivemongo.api.Cursor
 import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.api.bson.Macros.Placeholder.Handler
 import reactivemongo.api.bson.collection.BSONCollection
 import reactivemongo.api.commands.WriteResult
+import models.Task
 
 @Singleton
 class TaskDao @Inject()(

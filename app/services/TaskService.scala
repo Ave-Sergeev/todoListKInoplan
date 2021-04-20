@@ -1,12 +1,11 @@
 package services
 
-import daos.TaskDao
-import models.Task
-import reactivemongo.api.bson.BSONObjectID
-import reactivemongo.api.commands.WriteResult
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import reactivemongo.api.bson.BSONObjectID
+import daos.TaskDao
+import models.Task
 
 class TaskService @Inject()(
   taskDao: TaskDao)(
@@ -18,20 +17,36 @@ class TaskService @Inject()(
   def findOne(id: BSONObjectID): Future[Option[Task]] =
     taskDao.findById(id)
 
-  def create(task: Task): Future[WriteResult] =
-    taskDao.create(task)
+  def create(task: Task): Future[Either[String, Unit]] =
+    taskDao.create(task).map { writeResult =>
+      val errors = writeResult.writeErrors
+
+      if (errors.isEmpty) {
+        Right(())
+      } else {
+        Left(errors.mkString(", "))
+      }
+    }
 
   def update(id: BSONObjectID, task: Task): Future[Either[String, Unit]] =
     taskDao.update(id, task).map { writeResult =>
       val errors = writeResult.writeErrors
 
       if (errors.isEmpty) {
-      Right(())
+        Right(())
       } else {
-      Left(errors.mkString(", "))
+        Left(errors.mkString(", "))
       }
     }
 
-  def delete(id: BSONObjectID): Future[WriteResult] =
-    taskDao.delete(id)
+  def delete(id: BSONObjectID): Future[Either[String, Unit]] =
+    taskDao.delete(id).map { writeResult =>
+      val errors = writeResult.writeErrors
+
+      if (errors.isEmpty) {
+        Right(())
+      } else {
+        Left(errors.mkString(", "))
+      }
+    }
 }

@@ -4,8 +4,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.Results.NotFound
 import play.api.mvc._
-import services.TaskService
 import reactivemongo.api.bson.BSONObjectID
+import services.TaskService
 
 @Singleton
 class TodoAction @Inject()(
@@ -20,9 +20,7 @@ class TodoAction @Inject()(
     new ActionBuilder[TodoRequest, AnyContent] {
 
       def executionContext: ExecutionContext = ec
-
       override def parser: BodyParser[AnyContent] = defaultParser
-
       override def invokeBlock[A](
         request: Request[A],
         block: TodoRequest[A] => Future[Result]

@@ -1,14 +1,13 @@
 package controllers
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
 import play.api.mvc._
-import actions.TodoAction
-import models.Task
 import reactivemongo.api.bson.BSONObjectID
 import services.TaskService
-
-import javax.inject.Inject
+import actions.TodoAction
+import models.Task
 
 class TaskController @Inject()(
   todoAction: TodoAction,
@@ -27,7 +26,10 @@ class TaskController @Inject()(
 
   def addTask(): Action[Task] = Action.async(parse.json[Task]) { request =>
     import request.{body => task}
-    taskService.create(task).map(_ => Created(Json.toJson(task)))
+    taskService.create(task).map {
+      case Right(_) => Created(Json.toJson(task))
+      case Left(error) => InternalServerError(Json.obj("error" -> error))
+    }
   }
 
   def completeTask(id: BSONObjectID): Action[Task] = todoAction.todoAction(id).async(parse.json[Task]) { request =>
@@ -39,6 +41,9 @@ class TaskController @Inject()(
   }
 
   def deleteTask(id: BSONObjectID): Action[AnyContent] = todoAction.todoAction(id).async { implicit request =>
-    taskService.delete(id).map(_ => NoContent)
+    taskService.delete(id).map {
+      case Right(_) => Ok
+      case Left(error) => InternalServerError(Json.obj("error" -> error))
+    }
   }
 }

@@ -1,13 +1,53 @@
 package Actions
 
-import actions.TodoRequest
-import play.api.mvc.Result
-import play.api.mvc.Security.AuthenticatedRequest
-
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.{ActionBuilder, AnyContent, BodyParser, BodyParsers, Request, Result, Results}
+import actions.{TodoAction, TodoRequest}
+import models.Task
+import org.mockito.MockitoSugar
+import org.scalatest.MustMatchers
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
-class TodoActionMock (implicit val executionContext: ExecutionContext) {
+
+class TodoActionMock () extends PlaySpec with Results with GuiceOneAppPerSuite with MockitoSugar with MustMatchers{
    def filter[A](request: TodoRequest[A]): Future[Option[Result]] = {
     Future.successful(None)
+  }
+
+  implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+  val todoAction: TodoAction = mock[TodoAction]
+
+  val todoActionWithRequest = (task: Task) => new ActionBuilder[TodoRequest, AnyContent] {
+    override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+    override def executionContext: ExecutionContext = ec
+    def invokeBlock[A](request: Request[A], block: TodoRequest[A] => Future[Result]): Future[Result] = {
+      block(new TodoRequest(task, request))
+    }
+  }
+
+
+  val todoActionNotFound = (task: Task) => new ActionBuilder[TodoRequest, AnyContent] {
+    override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+    override def executionContext: ExecutionContext = ec
+    def invokeBlock[A](request: Request[A], block: TodoRequest[A] => Future[Result]): Future[Result] = {
+      Future.successful(NotFound(s"task with id ${task._id.stringify} not exist"))
+    }
+  }
+
+  val todoActionCreated = (task: Task) => new ActionBuilder[TodoRequest, AnyContent] {
+    override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+    override def executionContext: ExecutionContext = ec
+    def invokeBlock[A](request: Request[A], block: TodoRequest[A] => Future[Result]): Future[Result] = {
+      Future.successful(Created)
+    }
+  }
+
+  val todoActionBadRequest = (task: Task) => new ActionBuilder[TodoRequest, AnyContent] {
+    override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+    override def executionContext: ExecutionContext = ec
+    def invokeBlock[A](request: Request[A], block: TodoRequest[A] => Future[Result]): Future[Result] = {
+      Future.successful(BadRequest)
+    }
   }
 }

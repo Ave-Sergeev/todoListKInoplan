@@ -1,10 +1,8 @@
 package models
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import scala.util.{Failure, Success}
 import play.api.libs.json._
 import reactivemongo.api.bson.{BSONDocumentHandler, BSONObjectID, Macros}
-
-import scala.util.{Failure, Success}
 
 case class Task (
   _id: BSONObjectID = BSONObjectID.generate(),
