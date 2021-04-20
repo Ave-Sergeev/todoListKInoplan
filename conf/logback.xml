@@ -6,17 +6,7 @@
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
-
-  <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level
-  <appender name="Sentry" class="io.sentry.logback.SentryAppender">
-    <options>
-       NOTE: Replace the test DSN below with YOUR OWN DSN to see the events from this app in your Sentry project/dashboard -->
-  <!--  <dsn>"https://3e0cf5f4808543c78f7b983210b426d1@sentry.kinoplan.tk/60"</dsn>
- </options>
-</appender> -->
-
-<!-- Enable the Console and Sentry appenders, Console is provided as an example
-of a non-Sentry logger that is set to a different logging threshold -->
+  
   <root level="INFO">
     <appender-ref ref="Console" />
     <appender-ref ref="Sentry" />

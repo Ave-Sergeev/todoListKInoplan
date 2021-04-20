@@ -7,7 +7,6 @@ import reactivemongo.api.bson.BSONObjectID
 import daos.TaskDAO
 import models.Task
 
-@Singleton
 class TaskService @Inject() (
   taskDao: TaskDAO)(
 ) {

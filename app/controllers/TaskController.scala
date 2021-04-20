@@ -29,8 +29,10 @@ class TaskController @Inject()(
     import request.{body => task}
 
     taskService.create(task).map {
-      case Right(_) => Created(Json.toJson(task))
-      case Left(error) => InternalServerError(Json.obj("error" -> error))
+      case Right(_) =>
+        Created(Json.toJson(task))
+      case Left(error) =>
+        InternalServerError(Json.obj("error" -> error))
     }
   }
 
@@ -38,15 +40,19 @@ class TaskController @Inject()(
     import request.{body => task}
 
     taskService.update(id, task).map {
-      case Right(_) => Ok(Json.toJson(task))
-      case Left(error) => InternalServerError(Json.obj("error" -> error))
+      case Right(_) =>
+        Ok(Json.toJson(task))
+      case Left(error) =>
+        InternalServerError(Json.obj("error" -> error))
     }
   }
 
   def deleteTask(id: BSONObjectID): Action[AnyContent] = todoAction.todoAction(id).async { implicit request =>
     taskService.delete(id).map {
-      case Right(_) => Ok
-      case Left(error) => InternalServerError(Json.obj("error" -> error))
+      case Right(_) =>
+        Ok
+      case Left(error) =>
+        InternalServerError(Json.obj("error" -> error))
     }
   }
 }
