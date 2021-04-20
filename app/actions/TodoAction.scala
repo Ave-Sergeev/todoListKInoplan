@@ -20,7 +20,9 @@ class TodoAction @Inject()(
     new ActionBuilder[TodoRequest, AnyContent] {
 
       def executionContext: ExecutionContext = ec
+
       override def parser: BodyParser[AnyContent] = defaultParser
+
       override def invokeBlock[A](
         request: Request[A],
         block: TodoRequest[A] => Future[Result]

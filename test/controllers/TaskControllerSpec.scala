@@ -54,6 +54,7 @@ class TaskControllerSpec
     "task not found" in {
       when( taskService.findOne(any[BSONObjectID]) ).thenReturn(Future(Option.empty))
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
+
       val method = controller.oneTask(requestId).apply(request)
       status(method) mustBe NOT_FOUND
     }
@@ -68,12 +69,14 @@ class TaskControllerSpec
     "addTask" in {
       when( taskService.create(any[Task]) ).thenReturn(Future.successful(Right(()) ))
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionWithRequest(sessionTask))
+
       val method = call(controller.addTask(), request)
       status(method) mustBe CREATED
     }
 
     "not addTask" in {
       when( taskService.create(any[Task]) ).thenReturn(Future.successful(Left("test error") ))
+
       val method = call(controller.addTask(), request)
       status(method) mustBe INTERNAL_SERVER_ERROR
     }
@@ -101,6 +104,7 @@ class TaskControllerSpec
 
     "task found" in {
       when( taskService.update(any[BSONObjectID], any[Task]) ).thenReturn(Future.successful(Right(()) ))
+
       val method = call(controller.completeTask(updateId), request)
       status(method) mustBe OK
     }
@@ -108,6 +112,7 @@ class TaskControllerSpec
     "task not found" in {
       when( taskService.update(any[BSONObjectID], any[Task]) ).thenReturn(Future.successful(Left("error") ))
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
+
       val method = call(controller.completeTask(updateId), request)
       status(method) mustBe NOT_FOUND
     }
@@ -143,6 +148,7 @@ class TaskControllerSpec
     "task found" in {
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionWithRequest(sessionTask))
       when( taskService.delete(any[BSONObjectID]) ).thenReturn(Future.successful(Right(()) ))
+
       val method = controller.deleteTask(deleteId).apply(request)
       status(method) mustBe OK
     }
@@ -150,9 +156,9 @@ class TaskControllerSpec
    "task not found" in {
      when( taskService.delete(deleteId) ).thenReturn(Future.successful(Left("error") ))
      when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
+
      val method = controller.deleteTask(deleteId).apply(request)
       status(method) mustBe NOT_FOUND
     }
   }
 }
-

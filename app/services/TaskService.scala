@@ -4,11 +4,12 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import reactivemongo.api.bson.BSONObjectID
-import daos.TaskDao
+import daos.TaskDAO
 import models.Task
 
-class TaskService @Inject()(
-  taskDao: TaskDao)(
+@Singleton
+class TaskService @Inject() (
+  taskDao: TaskDAO)(
 ) {
 
   def findAll(): Future[Seq[Task]] =

@@ -22,6 +22,7 @@ trait TaskBson {
 object Task extends TaskJson with TaskBson
 
 trait BsonIdToJson {
+
   implicit val objectIdReads: Reads[BSONObjectID] = Reads[BSONObjectID] { jsonValue: JsValue =>
     BSONObjectID.parse(jsonValue.as[String]) match {
       case Success(bsonId) => JsSuccess(bsonId)

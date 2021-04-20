@@ -12,9 +12,11 @@ import reactivemongo.api.commands.WriteResult
 import models.Task
 
 @Singleton
-class TaskDao @Inject()(
+class TaskDAO @Inject()(
   mongoApi: ReactiveMongoApi
-) (implicit ec: ExecutionContext) {
+)(
+  implicit ec: ExecutionContext
+) {
 
   val collection: Future[BSONCollection] = mongoApi.database.map(_.collection("tasks"))
 

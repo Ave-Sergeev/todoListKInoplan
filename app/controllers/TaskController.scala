@@ -21,11 +21,13 @@ class TaskController @Inject()(
 
   def oneTask(id: BSONObjectID): Action[AnyContent] = todoAction.todoAction(id).async { request =>
     val foundedTask = request.task
+
     Future.successful(Ok(Json.toJson(foundedTask)))
   }
 
   def addTask(): Action[Task] = Action.async(parse.json[Task]) { request =>
     import request.{body => task}
+
     taskService.create(task).map {
       case Right(_) => Created(Json.toJson(task))
       case Left(error) => InternalServerError(Json.obj("error" -> error))
@@ -34,6 +36,7 @@ class TaskController @Inject()(
 
   def completeTask(id: BSONObjectID): Action[Task] = todoAction.todoAction(id).async(parse.json[Task]) { request =>
     import request.{body => task}
+
     taskService.update(id, task).map {
       case Right(_) => Ok(Json.toJson(task))
       case Left(error) => InternalServerError(Json.obj("error" -> error))

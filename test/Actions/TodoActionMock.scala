@@ -19,17 +19,25 @@ trait TodoActionMock extends PlaySpec with Results with GuiceOneAppPerSuite with
   val sessionTask: Task = Task(BSONObjectID.generate, "testDescriptions" ,completed = false ,deleted = false)
   val todoAction: TodoAction = mock[TodoAction]
 
-  val todoActionWithRequest = (task: Task) => new ActionBuilder[TodoRequest, AnyContent] {
+  val todoActionWithRequest: Task => ActionBuilder[TodoRequest, AnyContent] = (task: Task) =>
+    new ActionBuilder[TodoRequest, AnyContent] {
+
     override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+
     override def executionContext: ExecutionContext = ec
+
     def invokeBlock[A](request: Request[A], block: TodoRequest[A] => Future[Result]): Future[Result] = {
       block(new TodoRequest(task, request))
     }
   }
 
-  val todoActionNotFound = (task: Task) => new ActionBuilder[TodoRequest, AnyContent] {
+  val todoActionNotFound: Task => ActionBuilder[TodoRequest, AnyContent] = (task: Task) =>
+    new ActionBuilder[TodoRequest, AnyContent] {
+
     override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+
     override def executionContext: ExecutionContext = ec
+
     def invokeBlock[A](request: Request[A], block: TodoRequest[A] => Future[Result]): Future[Result] = {
       Future.successful(NotFound(s"task with id ${task._id.stringify} not exist"))
     }
