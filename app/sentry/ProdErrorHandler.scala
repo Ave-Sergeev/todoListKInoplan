@@ -1,4 +1,4 @@
-package utils
+package sentry
 
 import javax.inject.Inject
 import scala.concurrent.Future
