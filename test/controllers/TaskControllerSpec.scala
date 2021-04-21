@@ -19,7 +19,12 @@ import reactivemongo.api.bson.BSONObjectID
 import models.Task
 
 class TaskControllerSpec
-  extends PlaySpec with Results with GuiceOneAppPerSuite with MockitoSugar with MustMatchers with TodoActionMock {
+  extends PlaySpec
+    with Results
+    with GuiceOneAppPerSuite
+    with MockitoSugar
+    with MustMatchers
+    with TodoActionMock {
 
   implicit val mat: ActorSystem = ActorSystem()
 

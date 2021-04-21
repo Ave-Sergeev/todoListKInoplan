@@ -14,7 +14,9 @@ import models.Task
 class TaskController @Inject()(
   todoAction: TodoAction,
   taskService: TaskService
-)(implicit ex: ExecutionContext) extends InjectedController {
+)(
+  implicit ex: ExecutionContext
+) extends InjectedController {
 
   def allTasks(): Action[AnyContent] = Action.async { _ =>
     taskService.findAll().map(tasks => Ok(Json.toJson(tasks)))
