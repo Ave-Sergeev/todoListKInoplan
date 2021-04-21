@@ -1,6 +1,4 @@
-<!-- https://www.playframework.com/documentation/latest/SettingsLogger -->
 <configuration>
-  <!-- Configure the Console appender -->
   <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>

@@ -1,8 +1,10 @@
 package daos
 
 import javax.inject._
+
 import scala.concurrent._
 import scala.concurrent.ExecutionContext
+
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.Cursor
 import reactivemongo.api.bson.{BSONDocument, BSONObjectID}
@@ -35,13 +37,13 @@ class TaskDAO @Inject()(
 
   def create(task: Task): Future[WriteResult] =
     collection.flatMap(
-      _.insert(ordered = false).one(task.copy())
+      _.insert(ordered = false).one(task)
     )
 
   def update(id: BSONObjectID, task: Task): Future[WriteResult] =
     collection.flatMap(
       _.update(ordered = false)
-        .one(BSONDocument("_id" -> id), task.copy())
+        .one(BSONDocument("_id" -> id), task)
     )
 
   def delete(id: BSONObjectID): Future[WriteResult] =

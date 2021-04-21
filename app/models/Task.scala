@@ -1,6 +1,7 @@
 package models
 
 import scala.util.{Failure, Success}
+
 import play.api.libs.json._
 import reactivemongo.api.bson.{BSONDocumentHandler, BSONObjectID, Macros}
 
@@ -23,10 +24,8 @@ trait BsonIdToJson {
 
   implicit val objectIdReads: Reads[BSONObjectID] = Reads[BSONObjectID] { jsonValue: JsValue =>
     BSONObjectID.parse(jsonValue.as[String]) match {
-      case Success(bsonId) =>
-        JsSuccess(bsonId)
-      case Failure(e) =>
-        JsError("Invalid id")
+      case Success(bsonId) => JsSuccess(bsonId)
+      case Failure(e) => JsError("Invalid id")
     }
   }
 

@@ -9,7 +9,7 @@ import play.api.test.{FakeRequest, Helpers}
 import play.api.test.Helpers.{CONTENT_TYPE, GET, POST, PUT, call, contentAsJson, defaultAwaitTimeout, status}
 import play.api.http.MimeTypes.JSON
 import akka.actor.ActorSystem
-import Actions.TodoActionMock
+import actions.TodoActionMock
 import org.mockito.ArgumentMatchers.any
 import org.scalatest.MustMatchers
 import org.scalatestplus.mockito.MockitoSugar
@@ -22,7 +22,6 @@ class TaskControllerSpec
   extends PlaySpec with Results with GuiceOneAppPerSuite with MockitoSugar with MustMatchers with TodoActionMock {
 
   implicit val mat: ActorSystem = ActorSystem()
-  implicit val bp: BodyParsers.Default = new BodyParsers.Default
 
   def beforeAll(): Unit = Play.start(app)
   def afterAll(): Unit = Play.stop(app)
@@ -38,7 +37,9 @@ class TaskControllerSpec
 
       "empty response" in {
         when( taskService.findAll() ).thenReturn(Future(Nil))
+
         val method = controller.allTasks().apply(request)
+
         status(method) mustBe OK
         contentAsJson(method) mustBe Json.toJson(Seq[Task]())
       }
@@ -56,6 +57,7 @@ class TaskControllerSpec
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
 
       val method = controller.oneTask(requestId).apply(request)
+
       status(method) mustBe NOT_FOUND
     }
   }
@@ -71,6 +73,7 @@ class TaskControllerSpec
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionWithRequest(sessionTask))
 
       val method = call(controller.addTask(), request)
+
       status(method) mustBe CREATED
     }
 
@@ -78,6 +81,7 @@ class TaskControllerSpec
       when( taskService.create(any[Task]) ).thenReturn(Future.successful(Left("test error") ))
 
       val method = call(controller.addTask(), request)
+
       status(method) mustBe INTERNAL_SERVER_ERROR
     }
 
@@ -92,6 +96,7 @@ class TaskControllerSpec
         ))
 
       val method = call(controller.addTask(), request)
+
       status(method) mustBe BAD_REQUEST
     }
   }
@@ -106,6 +111,7 @@ class TaskControllerSpec
       when( taskService.update(any[BSONObjectID], any[Task]) ).thenReturn(Future.successful(Right(()) ))
 
       val method = call(controller.completeTask(updateId), request)
+
       status(method) mustBe OK
     }
 
@@ -114,6 +120,7 @@ class TaskControllerSpec
       when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
 
       val method = call(controller.completeTask(updateId), request)
+
       status(method) mustBe NOT_FOUND
     }
 
@@ -137,6 +144,7 @@ class TaskControllerSpec
         ))
 
       val method = call(controller.completeTask(updateId), request)
+
       status(method) mustBe BAD_REQUEST
     }
   }
@@ -150,14 +158,16 @@ class TaskControllerSpec
       when( taskService.delete(any[BSONObjectID]) ).thenReturn(Future.successful(Right(()) ))
 
       val method = controller.deleteTask(deleteId).apply(request)
+
       status(method) mustBe OK
     }
 
-   "task not found" in {
-     when( taskService.delete(deleteId) ).thenReturn(Future.successful(Left("error") ))
-     when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
+    "task not found" in {
+      when( taskService.delete(deleteId) ).thenReturn(Future.successful(Left("error") ))
+      when( todoAction.todoAction(any[BSONObjectID]) ).thenReturn(todoActionNotFound(sessionTask))
 
-     val method = controller.deleteTask(deleteId).apply(request)
+      val method = controller.deleteTask(deleteId).apply(request)
+
       status(method) mustBe NOT_FOUND
     }
   }

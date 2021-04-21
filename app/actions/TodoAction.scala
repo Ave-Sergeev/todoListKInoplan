@@ -1,7 +1,9 @@
 package actions
 
 import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.{ExecutionContext, Future}
+
 import play.api.mvc.Results.NotFound
 import play.api.mvc._
 import reactivemongo.api.bson.BSONObjectID
@@ -10,7 +12,7 @@ import services.TaskService
 @Singleton
 class TodoAction @Inject()(
   defaultParser: BodyParsers.Default
-) (implicit
+)(implicit
   ec: ExecutionContext,
   taskService: TaskService
 ) {

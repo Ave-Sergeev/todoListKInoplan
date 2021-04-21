@@ -1,8 +1,9 @@
-package Actions
+package actions
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import play.api.mvc.{ActionBuilder, AnyContent, BodyParser, BodyParsers, Request, Result, Results}
-import actions.{TodoAction, TodoRequest}
+
 import models.Task
 import org.mockito.MockitoSugar
 import org.scalatest.MustMatchers
@@ -18,11 +19,12 @@ trait TodoActionMock extends PlaySpec with Results with GuiceOneAppPerSuite with
   val taskService: TaskService = mock[TaskService]
   val sessionTask: Task = Task(BSONObjectID.generate, "testDescriptions" ,completed = false ,deleted = false)
   val todoAction: TodoAction = mock[TodoAction]
+  val mockBodyParsers: BodyParsers.Default = mock[BodyParsers.Default]
 
   val todoActionWithRequest: Task => ActionBuilder[TodoRequest, AnyContent] = (task: Task) =>
     new ActionBuilder[TodoRequest, AnyContent] {
 
-    override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+    override def parser: BodyParser[AnyContent] = mockBodyParsers
 
     override def executionContext: ExecutionContext = ec
 
@@ -34,7 +36,7 @@ trait TodoActionMock extends PlaySpec with Results with GuiceOneAppPerSuite with
   val todoActionNotFound: Task => ActionBuilder[TodoRequest, AnyContent] = (task: Task) =>
     new ActionBuilder[TodoRequest, AnyContent] {
 
-    override def parser: BodyParser[AnyContent] = mock[BodyParsers.Default]
+    override def parser: BodyParser[AnyContent] = mockBodyParsers
 
     override def executionContext: ExecutionContext = ec
 

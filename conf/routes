@@ -1,5 +1,3 @@
-
-# Tasks
 GET     /api/all                        controllers.TaskController.allTasks()
 GET     /api/one/:id                    controllers.TaskController.oneTask(id: reactivemongo.api.bson.BSONObjectID)
 POST    /api/add                        controllers.TaskController.addTask()

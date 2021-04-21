@@ -1,6 +1,7 @@
 package sentry
 
 import javax.inject.{Inject, Singleton}
+
 import play.api.Configuration
 import io.sentry.SentryClientFactory
 

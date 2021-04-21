@@ -1,12 +1,15 @@
 package services
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
 import reactivemongo.api.bson.BSONObjectID
 import daos.TaskDAO
 import models.Task
 
+@Singleton
 class TaskService @Inject() (
   taskDao: TaskDAO)(
 ) {
